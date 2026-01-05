@@ -1,55 +1,45 @@
 const mongoose = require("mongoose");
 
-const householdSchema = new mongoose.Schema(
+const HouseholdSchema = new mongoose.Schema(
   {
-    qrId: {
-      type: String,
-      required: true,
-    },
-
-    wardNumber: {
-      type: Number,
-      required: true,
-    },
-
-    houseNumber: {
-      type: String,
-      required: true,
-    },
-
-    address: {
-      type: String,
-      required: true,
-    },
-
-    ownerName: {
-      type: String,
-      required: true,
-    },
-
-    mobile: {
-      type: String,
-      required: true,
-    },
-
-    familyMembers: {
-      type: Number,
-      required: true,
-    },
-
-    propertyType: {
-      type: String,
-      enum: ["Residential", "Commercial"],
-      required: true,
-    },
-
+    qrId: String,
+    wardNumber: Number,
+    houseNumber: String,
+    address: String,
+    ownerName: String,
+    mobile: String,
+    familyMembers: Number,
+    propertyType: String,
     latitude: Number,
     longitude: Number,
-
     createdBy: String,
+
+    // -------- Phase 1: Manual Admin Fields --------
+    propertyTaxStatus: {
+      type: String,
+      enum: ["Paid", "Due", "NA"],
+      default: "NA",
+    },
+    propertyTaxId: {
+      type: String,
+      default: "",
+    },
+    userChargeStatus: {
+      type: String,
+      enum: ["Paid", "Unpaid"],
+      default: "Unpaid",
+    },
+    userChargeAmount: {
+      type: Number,
+      default: 0,
+    },
+    remarks: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Household", householdSchema);
+module.exports = mongoose.model("Household", HouseholdSchema);
 

@@ -28,13 +28,14 @@ router.post("/activate-qr", async (req, res) => {
     if (existingQR && existingQR.status === "ACTIVE") {
       return res.status(400).json({ message: "QR already activated" });
     }
-// 1b. Check if household already exists for this QR
-const existingHousehold = await Household.findOne({ qrId });
-if (existingHousehold) {
-  return res.status(400).json({
-    message: "Household already exists for this QR",
-  });
-}
+
+    // 1b. Check if household already exists for this QR
+    const existingHousehold = await Household.findOne({ qrId });
+    if (existingHousehold) {
+      return res.status(400).json({
+        message: "Household already exists for this QR",
+      });
+    }
 
     // 2. Activate QR (or create if not exists)
     await QRCode.findOneAndUpdate(
@@ -62,6 +63,48 @@ if (existingHousehold) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+/**
+ * GET all activated households (Admin Dashboard)
+ */
+router.get("/households", async (req, res) => {
+  try {
+    const households = await Household.find().sort({ createdAt: -1 });
+    res.json(households);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch households" });
+  }
+});
+/**
+ * Update revenue fields for a household
+ */
+router.put("/households/:id", async (req, res) => {
+  try {
+    const {
+      propertyTaxStatus,
+      userChargeStatus,
+      userChargeAmount,
+      remarks,
+    } = req.body;
+
+    const updated = await Household.findByIdAndUpdate(
+      req.params.id,
+      {
+        propertyTaxStatus,
+        userChargeStatus,
+        userChargeAmount,
+        remarks,
+      },
+      { new: true }
+    );
+
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Update failed" });
   }
 });
 
