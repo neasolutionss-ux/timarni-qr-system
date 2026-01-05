@@ -23,9 +23,13 @@ mongoose
     console.error("MongoDB connection error:", err);
   });
 
-const PORT = process.env.PORT || 5000;
 const adminRoutes = require("./routes/admin");
+const wasteRoutes = require("./routes/waste");
+
 app.use("/api/admin", adminRoutes);
+app.use("/api/waste", wasteRoutes);
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
