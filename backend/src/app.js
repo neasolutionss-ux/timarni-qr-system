@@ -26,12 +26,9 @@ app.use("/api/waste", wasteRoutes);
 /* ---------- DATABASE ---------- */
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("MongoDB connected");
-
-    // expose DB to routes
-    app.locals.db = mongoose.connection.db;
-  })
+.then(() => {
+  console.log("MongoDB connected");
+})
   .catch((err) => {
     console.error("MongoDB connection error:", err);
   });

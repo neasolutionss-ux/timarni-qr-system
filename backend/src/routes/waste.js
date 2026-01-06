@@ -1,25 +1,20 @@
 const express = require("express");
 const router = express.Router();
+const WasteCollection = require("../models/WasteCollection");
 
 /**
- * POST: Save waste collection
+ * POST — Save waste collection
  */
 router.post("/collect", async (req, res) => {
   try {
-    const payload = {
+    const record = new WasteCollection({
       ...req.body,
-      dateKey: new Date().toISOString().split("T")[0],
-      createdAt: new Date()
-    };
-
-    await req.app.locals.db
-      .collection("wastecollections")
-      .insertOne(payload);
-
-    res.json({
-      success: true,
-      message: "Waste data saved"
+      dateKey: new Date().toISOString().split("T")[0]
     });
+
+    await record.save();
+
+    res.json({ success: true });
   } catch (err) {
     console.error("Waste save error:", err);
     res.status(500).json({ message: "Save failed" });
@@ -27,19 +22,17 @@ router.post("/collect", async (req, res) => {
 });
 
 /**
- * GET: Fetch all waste records (dashboard)
+ * GET — Fetch waste records
  */
 router.get("/", async (req, res) => {
   try {
-    const records = await req.app.locals.db
-      .collection("wastecollections")
+    const records = await WasteCollection
       .find({})
-      .sort({ createdAt: -1 })
-      .toArray();
+      .sort({ createdAt: -1 });
 
     res.json(records);
   } catch (err) {
-    console.error("Fetch waste error:", err);
+    console.error("Waste fetch error:", err);
     res.status(500).json({ message: "Fetch failed" });
   }
 });
