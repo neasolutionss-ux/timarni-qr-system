@@ -2,40 +2,45 @@ const express = require("express");
 const router = express.Router();
 
 /**
- * POST: Save waste collection (already working)
+ * POST: Save waste collection
  */
-router.post("/collect", (req, res) => {
-  console.log("Waste collection received:", req.body);
+router.post("/collect", async (req, res) => {
+  try {
+    const payload = {
+      ...req.body,
+      dateKey: new Date().toISOString().split("T")[0],
+      createdAt: new Date()
+    };
 
-  res.json({
-    success: true,
-    message: "Waste data received"
-  });
+    await req.app.locals.db
+      .collection("wastecollections")
+      .insertOne(payload);
+
+    res.json({
+      success: true,
+      message: "Waste data saved"
+    });
+  } catch (err) {
+    console.error("Waste save error:", err);
+    res.status(500).json({ message: "Save failed" });
+  }
 });
 
 /**
- * GET: Fetch waste collection records by date (for dashboard)
- * URL: /api/waste?date=YYYY-MM-DD
+ * GET: Fetch all waste records (dashboard)
  */
 router.get("/", async (req, res) => {
   try {
-    const { date } = req.query;
-
-    // Default to today if date not provided
-    const dateKey =
-      date || new Date().toISOString().split("T")[0];
-
-    // Access MongoDB directly (no joins, no models)
     const records = await req.app.locals.db
       .collection("wastecollections")
-      .find({ dateKey })
+      .find({})
       .sort({ createdAt: -1 })
       .toArray();
 
     res.json(records);
   } catch (err) {
-    console.error("Error fetching waste data:", err);
-    res.status(500).json({ message: "Server error" });
+    console.error("Fetch waste error:", err);
+    res.status(500).json({ message: "Fetch failed" });
   }
 });
 
