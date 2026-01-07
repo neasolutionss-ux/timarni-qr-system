@@ -107,6 +107,44 @@ router.put("/households/:id", async (req, res) => {
     res.status(500).json({ message: "Update failed" });
   }
 });
+// ===============================
+// Citizen Property Tax API (READ ONLY)
+// ===============================
+router.get("/qr/:qrId", async (req, res) => {
+  try {
+    const { qrId } = req.params;
 
+    // ⚠️ SAME collection jo admin dashboard use karta hai
+    const record = await QRModel.findOne({ qrId });
+
+    if (!record) {
+      return res.status(404).json({
+        success: false,
+        message: "QR not found"
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: {
+        qrId: record.qrId,
+        ownerName: record.owner,
+        mobile: record.mobile,
+        houseNo: record.houseNo,
+        ward: record.ward,
+        propertyType: record.property,
+        taxAmount: record.amount,
+        taxStatus: record.propertyTax === "Paid" ? "PAID" : "DUE"
+      }
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+});
 module.exports = router;
 
