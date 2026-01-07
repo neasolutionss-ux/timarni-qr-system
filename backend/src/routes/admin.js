@@ -108,14 +108,14 @@ router.put("/households/:id", async (req, res) => {
   }
 });
 // ===============================
+// ===============================
 // Citizen Property Tax API (READ ONLY)
 // ===============================
 router.get("/qr/:qrId", async (req, res) => {
   try {
     const { qrId } = req.params;
 
-    // ⚠️ SAME collection jo admin dashboard use karta hai
-    const record = await QRModel.findOne({ qrId });
+    const record = await Household.findOne({ qrId });
 
     if (!record) {
       return res.status(404).json({
@@ -128,13 +128,13 @@ router.get("/qr/:qrId", async (req, res) => {
       success: true,
       data: {
         qrId: record.qrId,
-        ownerName: record.owner,
+        ownerName: record.ownerName,
         mobile: record.mobile,
-        houseNo: record.houseNo,
-        ward: record.ward,
-        propertyType: record.property,
-        taxAmount: record.amount,
-        taxStatus: record.propertyTax === "Paid" ? "PAID" : "DUE"
+        houseNo: record.houseNumber,
+        ward: record.wardNumber,
+        propertyType: record.propertyType,
+        taxAmount: record.userChargeAmount, // OR property tax if later added
+        taxStatus: record.propertyTaxStatus === "Paid" ? "PAID" : "DUE"
       }
     });
 
