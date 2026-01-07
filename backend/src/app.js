@@ -6,7 +6,7 @@ require("dotenv").config();
 const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin");
 const wasteRoutes = require("./routes/waste");
-
+const qrRoutes = require("./routes/qr");
 const app = express();
 
 /* ---------- MIDDLEWARE ---------- */
@@ -22,6 +22,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/waste", wasteRoutes);
+app.use("/api/qr", qrRoutes);
 
 /* ---------- DATABASE ---------- */
 mongoose
