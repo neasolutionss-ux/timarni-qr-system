@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Property Tax – Timarni Municipal Council</title>
-  <link rel="stylesheet" href="../assets/css/style.css" />
+
+  <link rel="stylesheet" href="/assets/css/style.css" />
 </head>
 
 <body>
@@ -16,21 +17,21 @@
   </header>
 
   <main>
-<div class="card">
-  <h3>Citizen Property Tax Details</h3>
+    <div class="card">
+      <p><strong>QR ID:</strong> <span id="qrId">—</span></p>
+      <p><strong>Owner:</strong> <span id="ownerName">—</span></p>
+      <p><strong>Mobile:</strong> <span id="mobile">—</span></p>
+      <p><strong>House No:</strong> <span id="houseNo">—</span></p>
+      <p><strong>Ward:</strong> <span id="ward">—</span></p>
+      <p><strong>Property Type:</strong> <span id="propertyType">—</span></p>
+      <p><strong>Tax Amount:</strong> ₹<span id="taxAmount">—</span></p>
+      <p><strong>Status:</strong> <span id="status">—</span></p>
 
-  <p><strong>QR ID:</strong> <span id="qrId">—</span></p>
-  <p><strong>Owner Name:</strong> <span id="ownerName">—</span></p>
-  <p><strong>Mobile Number:</strong> <span id="mobile">—</span></p>
-  <p><strong>House No:</strong> <span id="houseNo">—</span></p>
-  <p><strong>Ward:</strong> <span id="ward">—</span></p>
-  <p><strong>Property Type:</strong> <span id="propertyType">—</span></p>
-  <p><strong>Tax Amount (₹):</strong> <span id="taxAmount">—</span></p>
-  <p><strong>Status:</strong> <span id="taxStatus">—</span></p>
-
-  <button id="payBtn" disabled>Pay Property Tax</button>
-</div>
+      <button id="payBtn" disabled>Pay Property Tax</button>
+    </div>
   </main>
+
+  <!-- JS MUST be at bottom -->
   <script src="/assets/js/qr-page.js"></script>
 </body>
 </html>

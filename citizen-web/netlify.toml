@@ -1,0 +1,8 @@
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "/qr/*"
+  to = "/qr/index.html"
+  status = 200
+

@@ -1,51 +1,56 @@
-// ===== QR ID extraction (local + production) =====
-const params = new URLSearchParams(window.location.search);
-let qrId = params.get("qr");
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const qrId = params.get("qr");
 
-if (!qrId) {
-  const parts = window.location.pathname.split("/");
-  qrId = parts[parts.length - 1];
-}
+  if (!qrId) {
+    alert("Invalid QR code");
+    return;
+  }
 
-console.log("QR ID:", qrId);
+  // Show QR ID
+  document.getElementById("qrId").textContent = qrId;
 
-// ===== Backend URL (Render) =====
-const API_BASE = "https://timarni-qr-backend.onrender.com/api/qr/"; // CHANGE if needed
+  const API_URL = `https://timarni-qr-backend.onrender.com/api/qr/${qrId}`;
 
-// ===== Fetch property data =====
-fetch(`${API_BASE}/api/admin/qr/${qrId}`)
-  .then(res => res.json())
-  .then(resp => {
-    if (!resp.success) {
-      alert("Property data not found");
-      return;
-    }
+  fetch(API_URL)
+    .then(res => res.json())
+    .then(json => {
+      if (!json.success) {
+        alert("Property data not found");
+        return;
+      }
 
-    const d = resp.data;
+      const d = json.data;
 
-    // ===== Bind data to UI =====
-    document.getElementById("qrId").innerText = d.qrId;
-    document.getElementById("ownerName").innerText = d.ownerName;
-    document.getElementById("mobile").innerText = d.mobile;
-    document.getElementById("houseNo").innerText = d.houseNo;
-    document.getElementById("ward").innerText = d.ward;
-    document.getElementById("propertyType").innerText = d.propertyType;
-    document.getElementById("taxAmount").innerText = d.taxAmount;
-    document.getElementById("taxStatus").innerText = d.taxStatus;
+      setText("ownerName", d.ownerName);
+      setText("mobile", d.mobile);
+      setText("houseNo", d.houseNo);
+      setText("ward", d.ward);
+      setText("propertyType", d.propertyType);
+      setText("taxAmount", d.taxAmount);
+      setText("status", d.taxStatus);
 
-    // ===== Payment button logic =====
-    const payBtn = document.getElementById("payBtn");
+      const payBtn = document.getElementById("payBtn");
 
-    if (d.taxStatus === "DUE") {
-      payBtn.disabled = false;
-      payBtn.onclick = () => {
-        window.location.href =
-          `/payment-result/index.html?qr=${d.qrId}&amount=${d.taxAmount}`;
-      };
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert("Server error");
-  });
+      // Enable payment only if tax is DUE
+      if (String(d.taxStatus).toLowerCase() === "due") {
+        payBtn.disabled = false;
+        payBtn.classList.add("pay-enabled");
+        payBtn.onclick = () => {
+          alert("Payment gateway integration next step");
+        };
+      } else {
+        payBtn.disabled = true;
+        payBtn.classList.remove("pay-enabled");
+      }
+    })
+    .catch(() => {
+      alert("Failed to load property details. Please try again.");
+    });
+
+  function setText(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value ?? "—";
+  }
+})();
 

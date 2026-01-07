@@ -41,3 +41,27 @@ main {
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
+/* Pay Property Tax Button */
+#payBtn {
+  width: 100%;
+  padding: 14px;
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  background-color: #bdbdbd; /* default grey */
+  color: #ffffff;
+  cursor: not-allowed;
+}
+
+/* Enabled (Due) state */
+#payBtn.pay-enabled {
+  background-color: #2e7d32; /* green */
+  cursor: pointer;
+}
+
+#payBtn.pay-enabled:hover {
+  background-color: #1b5e20;
+}
+
