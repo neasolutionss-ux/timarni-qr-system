@@ -5,11 +5,28 @@ const QRCode = require("../models/QRCode");
 const Household = require("../models/Household");
 
 /**
+ * Utility: Extract clean QR ID
+ * Handles:
+ * - TMN-QR-000001
+ * - index.html?qr=TMN-QR-000001
+ * - https://timarni-qr.netlify.app/qr/index.html?qr=TMN-QR-000001
+ */
+function extractQrId(input) {
+  if (!input) return input;
+
+  if (input.includes("qr=")) {
+    return input.split("qr=").pop().trim();
+  }
+
+  return input.trim();
+}
+
+/**
  * Activate QR and save household details
  */
 router.post("/activate-qr", async (req, res) => {
   try {
-    const {
+    let {
       qrId,
       wardNumber,
       houseNumber,
@@ -22,6 +39,9 @@ router.post("/activate-qr", async (req, res) => {
       longitude,
       createdBy,
     } = req.body;
+
+    // 🔥 FIX: Always normalize QR ID before any DB operation
+    qrId = extractQrId(qrId);
 
     // 1. Check if QR already active
     const existingQR = await QRCode.findOne({ qrId });
@@ -78,6 +98,7 @@ router.get("/households", async (req, res) => {
     res.status(500).json({ message: "Failed to fetch households" });
   }
 });
+
 /**
  * Update revenue fields for a household
  */
@@ -107,7 +128,7 @@ router.put("/households/:id", async (req, res) => {
     res.status(500).json({ message: "Update failed" });
   }
 });
-// ===============================
+
 // ===============================
 // Citizen Property Tax API (READ ONLY)
 // ===============================
@@ -120,7 +141,7 @@ router.get("/qr/:qrId", async (req, res) => {
     if (!record) {
       return res.status(404).json({
         success: false,
-        message: "QR not found"
+        message: "QR not found",
       });
     }
 
@@ -133,18 +154,18 @@ router.get("/qr/:qrId", async (req, res) => {
         houseNo: record.houseNumber,
         ward: record.wardNumber,
         propertyType: record.propertyType,
-        taxAmount: record.userChargeAmount, // OR property tax if later added
-        taxStatus: record.propertyTaxStatus === "Paid" ? "PAID" : "DUE"
-      }
+        taxAmount: record.userChargeAmount,
+        taxStatus: record.propertyTaxStatus === "Paid" ? "PAID" : "DUE",
+      },
     });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({
       success: false,
-      message: "Server error"
+      message: "Server error",
     });
   }
 });
+
 module.exports = router;
 
