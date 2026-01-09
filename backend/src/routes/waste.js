@@ -3,13 +3,33 @@ const router = express.Router();
 const WasteCollection = require("../models/WasteCollection");
 
 /**
+ * Utility: Extract clean QR ID
+ */
+function extractQrId(input) {
+  if (!input) return input;
+
+  if (input.includes("qr=")) {
+    return input.split("qr=").pop().trim();
+  }
+
+  return input.trim();
+}
+
+/**
  * POST — Save waste collection
  */
 router.post("/collect", async (req, res) => {
   try {
+    const body = { ...req.body };
+
+    // 🔥 FIX: Normalize QR ID before save
+    if (body.qrId) {
+      body.qrId = extractQrId(body.qrId);
+    }
+
     const record = new WasteCollection({
-      ...req.body,
-      dateKey: new Date().toISOString().split("T")[0]
+      ...body,
+      dateKey: new Date().toISOString().split("T")[0],
     });
 
     await record.save();
@@ -26,9 +46,7 @@ router.post("/collect", async (req, res) => {
  */
 router.get("/", async (req, res) => {
   try {
-    const records = await WasteCollection
-      .find({})
-      .sort({ createdAt: -1 });
+    const records = await WasteCollection.find({}).sort({ createdAt: -1 });
 
     res.json(records);
   } catch (err) {
